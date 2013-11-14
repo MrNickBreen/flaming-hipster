@@ -3,7 +3,7 @@
  */
 /* globals define, Ember, App */
 
-define(['HipsterAddController', 'HipsterModel'], function () {
+define(['HipsterAddController', 'HipsterModel', 'EmoListModel'], function () {
 	"use strict";
 
 	App.HipsterAddRoute = Ember.Route.extend({

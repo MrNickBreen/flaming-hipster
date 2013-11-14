@@ -28,11 +28,27 @@ define([], function () {
 		 * @property lastName
 		 * @type {String}
 		 */
-		lastName: DS.attr('string')
+		lastName: DS.attr('string'),
+
+        /**
+         * The Hispter's Emo friends
+         *
+         * @property emoItems
+         * @type hasMany{Emo}
+         */
+        //emoItems: DS.hasMany('emoList', {async: true} )
+        emoItems: DS.hasMany('emoList')
 
 		/**
 		 * The Hipster's accessories
 		 */
 //        accessories: DS.belongsTo('accessory')
 	});
+/*
+    App.Hipster.FIXTURES = [
+        {id: 1, firstName: 'firstName', lastName: 'lastName', emoItems: []},
+        {id: 2, firstName: 'firstName1', lastName: 'lastName2', emoItems: [3,4]}
+    ];
+*/
+
 });

@@ -21,9 +21,12 @@ define([], function () {
 						lastName: lastName
 					};
 				}
+                console.log('about to call store');
 
 				this.get('store').find('hipster', query)
 					.then(function (results) {
+                        console.log('in find hipseters, heres were we are');
+                        console.log(results);
 						this.set('model', results);
 					}.bind(this));
 			}

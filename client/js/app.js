@@ -42,11 +42,20 @@ App = Ember.Application.create({
 App.deferReadiness();
 
 App.ApplicationSerializer = DS.RESTSerializer.extend({
-	primaryKey: '_id',
-
+	primaryKey: '_id'
+	/*//,
 	serializeHasMany: function(record, json, relationship) {
-		console.log(record, json, relationship);
-	}
+        this._super();
+        var key = relationship.key;
+
+        var relationshipType = DS.RelationshipChange.determineRelationshipType(record.constructor, relationship);
+        console.log('SERIALZE HAS MANY');
+        console.log(key);
+        console.log(relationshipType);
+        console.log('serialize has many?!?!');
+		//console.log(record, json, relationship);
+        console.log(json);
+	}*/
 });
 
 App.ApplicationAdapter = DS.RESTAdapter.extend({
@@ -61,6 +70,10 @@ App.Router.map(function () {
 		this.route('find');
 		this.route('view', { path: ':hipster_id' });
 		this.route('edit', { path: ':hipster_id/edit'});
+        this.resource('emoList', function() {
+            this.route('add');
+            this.route('view', {path: ':emo_list_id'});
+        });
 	});
 });
 
@@ -68,6 +81,8 @@ App.Router.map(function () {
 var mainDeps = ['HipsterRoute'];
 if (DEBUG) {
 	var templates = [
+        'emoList/view',
+        'emoList/add',
 		'hipster/add',
 		'hipster/edit',
 		'hipster/find',

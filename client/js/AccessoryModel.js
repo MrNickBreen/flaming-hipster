@@ -9,4 +9,9 @@ define([], function () {
 	App.Accessory = DS.Model.extend({
 		name: DS.attr('string')
 	});
+
+    /*
+    App.Accessory.FIXTURES = [
+        {id: '1', name: 'accessory'}
+    ];*/
 });

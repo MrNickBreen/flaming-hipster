@@ -34,7 +34,8 @@ module.exports = function(grunt) {
 		emberTemplates: {
 			default: {
 				files: {
-					"client/js/templates.js": ['client/hbs/*.hbs', 'client/hbs/hipster/*.hbs']
+					"client/js/templates.js": ['client/hbs/*.hbs', 'client/hbs/hipster/*.hbs',
+                        'client/hbs/hipster/emoList/*.hbs']
 				},
 				options: {
 					precompile: true,

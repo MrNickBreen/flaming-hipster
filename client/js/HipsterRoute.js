@@ -11,9 +11,14 @@ define([
 	'HipsterViewRoute',
 	'HipsterFindRoute',
 	'HipsterEditRoute',
-	'HipsterAddRoute'
+	'HipsterAddRoute',
+
+    'EmoListModel',
+    'EmoListAddRoute'
 ], function () {
 	"use strict";
 
 	App.HipsterRoute = Ember.Route.extend({});
+
+    App.EmoListRoute = Ember.Route.extend({});
 });

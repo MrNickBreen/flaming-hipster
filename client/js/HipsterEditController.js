@@ -7,6 +7,7 @@ define([], function () {
 	"use strict";
 
 	App.HipsterEditController = Em.ObjectController.extend({
+
 		actions: {
 			buttonClick: function () {
 				this.get('model').save()

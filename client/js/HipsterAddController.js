@@ -3,7 +3,7 @@
 /**
  * Created by quinn on 10/4/13.
  */
-define(['HipsterModel', 'AccessoryModel'], function () {
+define(['HipsterModel', 'AccessoryModel', 'EmoListModel'], function () {
 	"use strict";
 
 	/**
@@ -13,6 +13,7 @@ define(['HipsterModel', 'AccessoryModel'], function () {
 	 * @extends Ember.ObjectController
 	 */
 	App.HipsterAddController = Ember.ObjectController.extend({
+     //   emoItems:null,
 
 		foo: function (key, value) {
 			console.log(key, value);
@@ -29,6 +30,16 @@ define(['HipsterModel', 'AccessoryModel'], function () {
 			return this.get('store').find('accessory');
 		}.property(),
 
+        /**
+         * Returns all Emolist records
+         *
+         * @method emoListOptions
+         * @return DS.PromiseArray
+         */
+        emoListOptions: function () {
+            return this.get('store').find('emoList');
+        }.property(),
+
 		actions: {
 			/**
 			 * Saves the new record when the user presses
@@ -37,11 +48,15 @@ define(['HipsterModel', 'AccessoryModel'], function () {
 			 * @method buttonClick
 			 */
 			buttonClick: function () {
-				Ember.debug('Saving Hipster');
+
 				this.get('model').save()
 					.then(function (result) {
+                        console.log('saved hipster!!');
+                        console.log(result);
 						this.transitionToRoute('hipster.view', result);
 					}.bind(this));
+
+
 			}
 		}
 	});

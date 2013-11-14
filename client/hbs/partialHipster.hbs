@@ -3,5 +3,8 @@
 	{{input disabledBinding="isDisabled" placeholder="Last Name" valueBinding="lastName"}}
 </div>
 <div>
-	{{view Em.Select contentBinding="accessoryOptions" optionLabelPath="content.name" selectionBinding="accessories"}}
+	{{!view Em.Select contentBinding="accessoryOptions" optionLabelPath="content.name" selectionBinding="accessories"}}
+</div>
+<div>
+    {{view Em.Select multiple="true" contentBinding="emoListOptions" optionLabelPath="content.hangout" selectionBinding="emoItems"}}
 </div>

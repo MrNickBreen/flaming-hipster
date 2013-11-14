@@ -16,10 +16,15 @@ var collections = {};
 /* Models */
 var Startup = mongoose.model('Startups', { time: Date });
 
-var Hipster =  mongoose.model('Hipsters', {
+var emoListSchema = new mongoose.Schema({ hangout: String });
+var EmoList = mongoose.model('EmoList', emoListSchema );
+
+var hipsterSchema = new mongoose.Schema({
     firstName: String,
-    lastName: String
+    lastName: String,
+    emoItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'EmoList' }]
 });
+var Hipster =  mongoose.model('Hipsters', hipsterSchema);
 
 var Accessory = mongoose.model('Accessories', {
 	name: String
@@ -36,7 +41,7 @@ server.use(restify.queryParser());
 
 server.get('/api/:version/:collection', function (request, response, next) {
     "use strict";
-
+    console.log('requesting a get...'+request.params.collection);
     //TODO: This should be procedural, not a switch statement?
     var db, modelName;
     switch (request.params.collection) {
@@ -50,15 +55,94 @@ server.get('/api/:version/:collection', function (request, response, next) {
 			modelName = 'accessory'
 			break;
 
+        case "emoLists":
+            db = EmoList;
+            modelName = 'emoList'
+            break;
+
         default:
             response.send({ error: 'No such collect: ' + request.params.collection});
     }
 
-    db.find(request.query, function (err, results) {
-        var body = {};
-        body[modelName] = results;
-        response.send(body);
-    });
+    if (request.query.ids !== undefined && request.query.ids.length > 0) {
+        // NB: This is how you create queries for multiple ids (return records were ids are in this array). This is used
+        // for sideloading {async=true}
+        db.find({_id: { $in: request.query.ids}}, function (err, result) {
+            var restResponse = {};
+            restResponse[modelName] = result;
+            response.send(restResponse);
+        });
+    }
+    else {
+        console.log(request.params.collection);
+        if (request.params.collection === "hipsters") {
+            // TODO: use populate and strip out the emoItems and replace with id's to make a relational object return
+            //db.find(request.query).populate('emoItems').exec(function (err, results) {
+            db.find(request.query, function (err, results) {
+                console.log('find all hipsters!!');
+
+                var body = {};
+                body[modelName] = results;
+                response.send(body);
+            });
+        }
+        else {
+            db.find(request.query, function (err, results) {
+                console.log('find all!!');
+                var body = {};
+                body[modelName] = results;
+                response.send(body);
+            });
+        }
+    }
+
+
+
+    /*if (request.params.collection === "hipsters") {
+        // NB: The .lean.exec is used to serialize the data before returning it to ember. mongoose doesn't allow
+        // editing of results
+        // TODO: generalize this to work for all ember models.
+        db.find(request.query).lean().exec(function (err, results) {
+
+            console.log('here is the results of hipser find');
+            console.log(results);
+
+            for (var i=0; i < results.length; i=i+1) {
+                if (results[i].emoItems !== undefined && results[i].emoItems.length > 0) {
+                    var emoItemArray = [];
+
+                    for (var k=0; k < results[i].emoItems.length; k=k+1) {
+                        emoItemArray.push(results[i].emoItems[k]['_id'].toString());
+                    }
+                    results[i].emoItems = [];
+                    results[i].emoItems = emoItemArray;
+                }
+            }
+
+            var body = {};
+            body[modelName] = results;
+            response.send(body);
+        });
+    }
+    else {
+        console.log(request.query);
+        if (request.query.ids !== undefined && request.query.ids.length > 0) {
+            // NB: This is how you create queries for multiple ids (return records were ids are in this array)
+            db.find({_id: { $in: request.query.ids}}, function (err, result) {
+                var restResponse = {};
+                restResponse[modelName] = result;
+                response.send(restResponse);
+            });
+        }
+        else {
+            db.find(request.query, function (err, results) {
+                console.log('find all!!');
+                var body = {};
+                body[modelName] = results;
+                response.send(body);
+            });
+        }
+    }*/
 
     return next();
 });
@@ -115,18 +199,41 @@ server.put('/api/:version/:collection/:id', function (request, response, next) {
 
 server.post('/api/:version/:collection', function (request, response, next) {
     "use strict";
-    var newHipster = new Hipster({
-        firstName: request.context.hipster.firstName,
-        lastName: request.context.hipster.lastName
-    });
-
-    newHipster.save(function (err, savedObj) {
-        response.send({
-            hipster: savedObj
+    if (request.context.collection == "hipsters") {
+        console.log('saving hipster');
+        console.log(request.context);
+        var newHipster = new Hipster({
+            firstName: request.context.hipster.firstName,
+            lastName: request.context.hipster.lastName,
+            emoItems: request.context.hipster.emoItems
         });
-    });
 
-    return next();
+        newHipster.save(function (err, savedObj) {
+            console.log('Add patient err nad saved obj');
+            console.log(err);
+            console.log(savedObj);
+
+            response.send({
+                hipster: savedObj
+            });
+        });
+
+        return next();
+    }
+    else if(request.context.collection == "emoLists") {
+        console.log('saving emolist');
+        var newEmoList = new EmoList({
+            hangout: request.context.emoList.hangout
+        });
+
+        newEmoList.save(function (err, savedObj) {
+            response.send({
+                emoList: savedObj
+            });
+        });
+
+        return next();
+    }
 });
 
 server.get(/\/?.*/, restify.serveStatic({
